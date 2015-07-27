@@ -5,6 +5,16 @@ The idea is that whenever the chromecast is in Backdrop mode (slides, but unfort
 
 (I needed a simple app that takes over when nothing else is playing. I have a plasma TV, and it is not very happy about non-moving images over time ;-)
 
+## Supported apps
+* Default Media Player (and derivatives)
+* NRK TV
+* TV 2 Sumo
+
+##Usage
+```bash
+nohup ./castsaver.py > /dev/null 2>&1&
+````
+
 ##Issues
 * Cannot check media status of HBO Nordic (encrypted?)
 * Cannot check media status of NetFlix (encrypted)
