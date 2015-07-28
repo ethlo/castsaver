@@ -22,13 +22,13 @@ pip install enum34
 pip install pychromecast
 ```
 
-* Download ```castsaver.py``` (https://github.com/ethlo/castsaver/blob/master/castsaver.py)
+* Download ```castsaver.py``` and ```castsaver.ini```
 * chmod +x castsaver.py
-* Create a ```media.txt``` file if you want do define your own media URLs
+* Enable media resource file (URL per line in file) in ```castsaver.ini``` if you want do define your own media URLs
 
 ##Usage
 ```bash
-nohup ./castsaver.py > /dev/null 2>&1&
+nohup ./castsaver.py > out.log 2>&1&
 ````
 
 ##Example log
