@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from __future__ import print_function
+import os
 import time
 import pychromecast
 import random
+from random import randint
 import logging
 
 class CastSaver:
@@ -19,6 +21,7 @@ class CastSaver:
 	}
 	
 	# Configuration
+	mediaSource = 'media.txt'
 	logFile = 'castsaver.log'
 	logLevel = logging.INFO
 	check_interval = 5;
@@ -51,8 +54,12 @@ class CastSaver:
 	def startScreenSaver(self, cast):
 		mc = cast.media_controller
 		
-		lines = open('media.txt').read().splitlines()
-		url = random.choice(lines)
+		if os.path.isfile(self.mediaSource) and os.path.getsize(self.mediaSource) > 0:
+			lines = open(self.mediaSource).read().splitlines()
+			url = random.choice(lines)
+		else:
+			url = 'http://wallpaperfx.com/view_image/a-1920x1080-wallpaper-' + str(randint(100,16000)) + '.jpg'		
+
 		self.logger.debug('Displaying ' + url)
 		type = '';
 		mc.play_media(url, type);
