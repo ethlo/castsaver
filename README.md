@@ -10,6 +10,22 @@ The idea is that whenever the chromecast is in Backdrop mode (slides, but unfort
 * NRK TV
 * TV 2 Sumo
 
+## Setup
+
+```bash
+sudo apt-get install python-pip
+sudo apt-get install python-dev
+```
+```bash
+pip install netifaces
+pip install enum34
+pip install pychromecast
+```
+
+* Download ```castsaver.py``` (https://github.com/ethlo/castsaver/blob/master/castsaver.py)
+* chmod +x castsaver.py
+* Create a ```media.txt``` file if you want do define your own media URLs
+
 ##Usage
 ```bash
 nohup ./castsaver.py > /dev/null 2>&1&
