@@ -16,8 +16,8 @@ class CastSaver:
 	DEFAULT_MEDIAPLAYER_APP_ID = 'CC1AD845'
 	
 	def __init__(self):
-		# Time for last idle application
-		self.idle = 0
+		# Time for last idle application per device
+		self.idle = {}
 
 		# Load configuration from file
 		self.config = ConfigParser.ConfigParser()
@@ -52,6 +52,8 @@ class CastSaver:
 			self.logger.info('Discovered no chrome cast devices. Exiting')
 			sys.exit()
 		self.logger.info('Dicovered chromecast devices: ' + str(self.chromeCasts.keys()))
+		for name in self.chromeCasts.keys():
+			self.idle[name] = 0
 
 		while True:
 			for name, cast in self.chromeCasts.iteritems():
@@ -70,7 +72,7 @@ class CastSaver:
 		else:
 			url = 'http://wallpaperfx.com/view_image/a-1920x1080-wallpaper-' + str(randint(100,16000)) + '.jpg'		
 
-		self.logger.debug('Displaying ' + url)
+		self.logger.debug('Displaying ' + url + ' on device ' + cast.device.friendly_name)
 		type = '';
 		mc.play_media(url, type);
 
@@ -81,13 +83,14 @@ class CastSaver:
 		self.logger.debug('Checking status of ' + str(cast))
 		
 		status = cast.status
+		name = cast.device.friendly_name
 		
 		if status:
 			appId = status.app_id
 			appName = status.display_name
 
 			if appId == CastSaver.BACKDROP_APP_ID and self.run_if_backdrop_mode:
-				self.logger.info('Backdrop app running, starting screensaver');
+				self.logger.info('Backdrop app running on device ' + name + ', starting screensaver');
 				self.startScreenSaver(cast)
 			elif appId == CastSaver.DEFAULT_MEDIAPLAYER_APP_ID:
 				mc = cast.media_controller
@@ -95,23 +98,23 @@ class CastSaver:
                                 	self.startScreenSaver(cast)
 			elif appId in self.available_for_status:
 				mc = cast.media_controller
-				self.logger.debug('Media status for ' + appId + ' - ' + appName + ': ' + mc.status.player_state);
+				self.logger.debug('Media status for ' + name + ': ' + appId + ' - ' + appName + ': ' + mc.status.player_state);
 				if (mc.status.player_is_idle or mc.status.player_is_paused):
-					if self.idle == 0:
-						self.idle = time.time()
-						self.logger.info('Discovered idle/paused application ' + appName)
+					if self.idle[name] == 0:
+						self.idle[name] = time.time()
+						self.logger.info('Discovered idle/paused application ' + appName + ' on device ' + name)
 				else:
-					if self.idle != 0:
-						self.logger.info('Discovered active application ' + appName + ', resetting idle timer')
-						self.idle = 0
+					if self.idle[name] != 0:
+						self.logger.info('Discovered active application ' + appName + ' on device ' + name + ', resetting idle timer')
+						self.idle[name] = 0
 
-				if self.idle > 0 and (time.time() > self.idle + self.max_idle_interval):
-					self.logger.info('Application ' + appName + ' has been idle too long, starting screensaver')
+				if self.idle[name] > 0 and (time.time() > self.idle[name] + self.max_idle_interval):
+					self.logger.info('Application ' + appName + ' has been idle too long on device ' + name + ', starting screensaver')
 					self.startScreenSaver(cast);
 			else:
-				self.logger.info('Unsupported application running: ' + appId + " - " + appName)
+				self.logger.info('Unsupported application running: ' + str(appId) + " - " + str(appName) + ' on device ' + name)
 		else:
-			self.logger.info('No status available')
+			self.logger.info('No status available for device ' + name)
 try:
 	print('CastSaver - Chromecast screen-saver');
 	CastSaver();	
